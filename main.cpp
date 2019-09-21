@@ -19,7 +19,6 @@ int main(void){
 		switch(coord){
 			case OPC_INCLUIR:
 				drawNotasInterface(alunos, TL);
-				getch();
 				break;
 			case OPC_CONSULTAR:
 				break;

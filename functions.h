@@ -1,4 +1,12 @@
-void incluirAlunos(){ //INCLUIR NOTAS
+int insertAlunos(aluno alunos[], int &size, aluno novo){ //INCLUIR NOTAS
+	size++;
+	alunos[size].ra = novo.ra;
+	strcpy(alunos[size].nome, novo.nome);
+	for (int i=0; i<4; i++){
+		alunos[size].notas[i] = novo.notas[i];
+	}
+	
+	return alunos[size].ra == novo.ra;
 }
 
 void consultarAlunos(){ 	//CONSULTAR NOTAS
@@ -19,28 +27,20 @@ void exibirAlunos(){ 	//EXIBIR ALUNOS
 aluno getAluno(aluno alunos[], int size, int index=-1){
 	aluno _aluno;
 	int i=0;
-	
-	if(index == -1){
+	printf("%d", alunos[i].ra);
+	while(alunos[i].ra != index && i < size && index != -1){
+		printf("%d", alunos[i].ra);
+		i++;
+	}
+	if(i == size || index == -1){
 		_aluno.ra = 0;
 		strcpy(_aluno.nome, "\0");
 		for(i; i<4; i++){
 			_aluno.notas[i] = 0;
 		}
-	}else{
-		int i = 0;
-		while(alunos[i].ra != index && index < size)
-			i++;
-		if(index == size){
-			_aluno.ra = 0;
-			strcpy(_aluno.nome, "\0");
-			for(i; i<4; i++){
-				_aluno.notas[i] = 0;
-			}
-		}
-		else{
-			_aluno = alunos[i];
-		}
 	}
+	else if(index != -1)
+		_aluno = alunos[i];
 	
 	return _aluno;
 }
@@ -66,5 +66,12 @@ void readStringVariable(char variable[], int xi, int yi, int xf, int yf){
 	clearCoordinates(xi, yi, xf, yf);
 	fflush(stdin);
 	gotoxy(xi, yi); gets(variable);
-	
+}
+
+float readFloatVariable(int xi, int yi, int xf, int yf){
+	float aux;
+	clearCoordinates(xi, yi, xf, yf);
+	fflush(stdin);
+	gotoxy(xi, yi); scanf("%f",&aux);
+	return aux;
 }
