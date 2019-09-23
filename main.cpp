@@ -1,14 +1,14 @@
 #include <stdio.h>
-#include <ctype.h>
 #include <windows.h>
-#include <string.h>
+
+#define TF 400
 
 #include "structs.h"
 #include "interface.h"
 
-#define TF 400
 
 int main(void){
+	setlocale(LC_ALL, "Portuguese");
 	aluno alunos[TF];
 	int coord;
 	int TL=0;
@@ -21,6 +21,7 @@ int main(void){
 				drawNotasInterface(alunos, TL);
 				break;
 			case OPC_CONSULTAR:
+				drawConsultarInterface(alunos, TL);
 				break;
 			case OPC_ALTERAR:
 				break;
