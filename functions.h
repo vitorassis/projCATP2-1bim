@@ -38,7 +38,10 @@ int removeAlunos(aluno alunos[], int &size, int ra){ 	//EXCLUIR NOTAS
 		for(int i=size; i>pos; i--)
 			setAluno(alunos[i-1], alunos[i]);
 		size--;
-		return 1;
+		if(alunos[pos].ra != ra)
+			return 1;
+		else
+			return 0;
 	}
 }
 
@@ -55,7 +58,7 @@ aluno getAlunoByRA(aluno alunos[], int size, int key=-1){
 		}
 	}
 	else if(key != -1)
-		_aluno = alunos[i];
+		setAluno(_aluno, alunos[i]);
 	
 	return _aluno;
 }
@@ -66,7 +69,7 @@ void getAlunoByNome(aluno alunos[], aluno alunos_return[], int &size_return, int
 	size_return = 0;
 	while(i<size){
 		if(strstr(alunos[i].nome, key)){
-			alunos_return[size_return] = alunos[i];
+			setAluno(alunos_return[size_return], alunos[i]);
 			size_return ++;
 		}
 			

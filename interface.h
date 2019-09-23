@@ -17,10 +17,10 @@
 #define OPC_CONSULTAR_NOME 11
 #define OPC_CONSULTAR_VOLTAR 12
 
-#define OPC_CONSULTAR_OPTION_EXIBIR 10
-#define OPC_CONSULTAR_OPTION_ALTERAR 11
-#define OPC_CONSULTAR_OPTION_EXCLUIR 12
-#define OPC_CONSULTAR_OPTION_MUDARBUSCA 13
+#define OPC_CONSULTAR_OPTION_EXIBIR 11
+#define OPC_CONSULTAR_OPTION_ALTERAR 12
+#define OPC_CONSULTAR_OPTION_EXCLUIR 13
+#define OPC_CONSULTAR_OPTION_MUDARBUSCA 10
 #define OPC_CONSULTAR_OPTION_VOLTAR 14
 
 #define OPC_CONSULTAR_OPTION_EXCLUIR_SIM 10
@@ -172,7 +172,7 @@ void drawNotasInterface(aluno alunos[], int &size, int editable=1, int aluno_ind
 							showToast("Nota maior que 10!");
 						if(_aluno.notas[i] < 0)
 							showToast("Nota menor que 0!");
-					}while(!(_aluno.notas[i] <= 10 && _aluno.notas[i] >= 0) && aluno_index == -1);
+					}while(!(_aluno.notas[i] <= 10 && _aluno.notas[i] >= 0));
 					removeToast();
 					x_notas += 15;
 				}
@@ -192,7 +192,7 @@ void drawNotasInterface(aluno alunos[], int &size, int editable=1, int aluno_ind
 				
 			}
 		}else{
-			showToast("Pressione Enter para voltar");
+			showToast("Pressione uma tecla para voltar");
 			getch();
 		}
 		
@@ -227,7 +227,7 @@ int showConsultarMenu(){
 
 int drawConsultarOptionsMenu(){
 	int tecla;
-	int coord=OPC_CONSULTAR_OPTION_EXIBIR;
+	int coord=OPC_CONSULTAR_OPTION_MUDARBUSCA;
 	
 	do{
 		
@@ -244,10 +244,10 @@ int drawConsultarOptionsMenu(){
 		clearCoordinates(CURSOR_POS, coord);
 		switch(tecla){
 			case 72: 	//UP
-				coord = coord<=OPC_CONSULTAR_OPTION_EXIBIR ? OPC_CONSULTAR_OPTION_VOLTAR : coord-1;
+				coord = coord<=OPC_CONSULTAR_OPTION_MUDARBUSCA ? OPC_CONSULTAR_OPTION_VOLTAR : coord-1;
 				break;
 			case 80: 	//DOWN
-				coord = coord>=OPC_CONSULTAR_OPTION_VOLTAR ? OPC_CONSULTAR_OPTION_EXIBIR : coord+1;
+				coord = coord>=OPC_CONSULTAR_OPTION_VOLTAR ? OPC_CONSULTAR_OPTION_MUDARBUSCA : coord+1;
 		}
 	}while(tecla != 13);
 	return coord;
@@ -294,8 +294,8 @@ void drawRemoveInterface(aluno alunos[], int &size, int ra){
 				showToast("Removido com sucesso");
 			else
 				showToast("Excluído com sucesso");
+			getch();
 	}
-	getch();
 	removeToast();
 }
 
