@@ -32,22 +32,22 @@ int checkConceitoExists(aluno alunos[], int size, char conceito){
 		return 1;
 }
 
-float generateMedia(aluno _aluno){
+float generateMedia(float notas[]){
 	float ordenado[4];
-	sortNotas(_aluno.notas, ordenado);
+	sortNotas(notas, ordenado);
 	
 	return (ordenado[1] + ordenado[2] + ordenado[3])/3;
 }
 
-char generateConceito(aluno _aluno){
+char generateConceito(float media){
 	char conceito;
-	if(_aluno.media > 8)
+	if(media > 8)
 		conceito = 'A';
-	else if(_aluno.media > 6)
+	else if(media > 6)
 		conceito = 'B';
-	else if(_aluno.media > 4)
+	else if(media > 4)
 		conceito = 'C';
-	else if(_aluno.media > 2)
+	else if(media > 2)
 		conceito = 'D';
 	else
 		conceito = 'E';
@@ -61,12 +61,30 @@ void setAluno(aluno &novo, aluno temp){
 	for (int i=0; i<4; i++){
 		novo.notas[i] = temp.notas[i];
 	}
-	novo.media = generateMedia(novo);
-	novo.conceito = generateConceito(novo);
+	novo.media = generateMedia(novo.notas);
+	novo.conceito = generateConceito(novo.media);
+}
+
+void ordenateAlenos(aluno alunos[], int size){
+	int k, j;
+	aluno aux;
+
+    for (k = 1; k < size; k++) {
+
+        for (j = 0; j < size-1; j++) {
+
+            if (stricmp(alunos[j].nome, alunos[j + 1].nome) > 0) {
+            	setAluno(aux, alunos[j]);
+                setAluno(alunos[j], alunos[j+1]);
+                setAluno(alunos[j+1], aux);
+            }
+        }
+    }
 }
 
 int insertAlunos(aluno alunos[], int &size, aluno novo){ //INCLUIR NOTAS
 	setAluno(alunos[size], novo);
+	ordenateAlenos(alunos, size);
 	
 	return alunos[size++].ra == novo.ra;
 }
@@ -79,6 +97,7 @@ int alterAlunos(aluno alunos[], int size, aluno temp){ 	//ALTERAR NOTAS
 		return 0;
 	else{
 		setAluno(alunos[pos], temp);
+		ordenateAlenos(alunos, size);
 		return 1;
 	}
 }
@@ -207,4 +226,6 @@ void readStringVariable(char variable[], int xi, int yi, int xf, int yf, int pre
 	}
 }
 
-
+int generateRelatorio(aluno alunos[], int size, char nome_arq[]){
+	//
+}

@@ -508,3 +508,16 @@ void drawRemoverPorCategoriaInterface(aluno alunos[], int &size){
 	
 }
 
+void drawGerarRelatorioInterface(aluno alunos[], int size){
+	char nome_arq[40];
+	strcpy(nome_arq, "relatorio");
+	gotoxy(centralize("Gerar relatório"), 6); printf("Gerar relatório");
+	gotoxy(10, 8); printf("Nome do arquivo: ");
+	do{
+		readStringVariable(nome_arq, 27, 8, 50, 8, 1);
+	}while(stricmp(nome_arq, "\0") == 0);
+	
+	if(stricmp(nome_arq, "0") !=0){
+		generateRelatorio(alunos, size, nome_arq);
+	}
+}

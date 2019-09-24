@@ -27,6 +27,7 @@ int main(void){
 				drawRemoverPorCategoriaInterface(alunos, TL);
 				break;
 			case OPC_GERARRELAORIO:
+				drawGerarRelatorioInterface(alunos, TL);
 				break;
 			case OPC_SAIR:
 				clearScreen();
