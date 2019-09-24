@@ -23,11 +23,10 @@ int main(void){
 			case OPC_CONSULTAR:
 				drawConsultarInterface(alunos, TL);
 				break;
-			case OPC_ALTERAR:
+			case OPC_REMOVERPORCATEGORIA:
+				drawRemoverPorCategoriaInterface(alunos, TL);
 				break;
-			case OPC_EXCLUIR:
-				break;
-			case OPC_EXIBIR:
+			case OPC_GERARRELAORIO:
 				break;
 			case OPC_SAIR:
 				clearScreen();

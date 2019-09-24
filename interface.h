@@ -5,10 +5,10 @@
 
 #define OPC_INCLUIR 10
 #define OPC_CONSULTAR 11
-#define OPC_ALTERAR 71
-#define OPC_EXCLUIR 72
+#define OPC_REMOVERPORCATEGORIA 12
+#define OPC_GERARRELAORIO 13
 #define OPC_EXIBIR 73
-#define OPC_SAIR 12
+#define OPC_SAIR 14
 
 #define CURSOR 187
 #define CURSOR_POS 31
@@ -25,6 +25,13 @@
 
 #define OPC_CONSULTAR_OPTION_EXCLUIR_SIM 10
 #define OPC_CONSULTAR_OPTION_EXCLUIR_CANCELAR 11
+
+#define OPC_REMOVERPORCATEGORIA_A 10
+#define OPC_REMOVERPORCATEGORIA_B 11
+#define OPC_REMOVERPORCATEGORIA_C 12
+#define OPC_REMOVERPORCATEGORIA_D 13
+#define OPC_REMOVERPORCATEGORIA_E 14
+#define OPC_REMOVERPORCATEGORIA_VOLTAR 15
 
 #define clearScreen clrscr
 #include "functions.h"
@@ -83,8 +90,8 @@ int showMainMenu(int size){
 		
 		gotoxy(CURSOR_POS+2, OPC_INCLUIR);printf("Inserir");
 		gotoxy(CURSOR_POS+2, OPC_CONSULTAR);printf("Consultar %s", alunos_vazio);
-		//gotoxy(9, OPC_ALTERAR);printf("Alterar");
-		//gotoxy(CURSOR_POS+2, OPC_EXCLUIR);printf("Excluir %s", alunos_vazio);
+		gotoxy(CURSOR_POS+2, OPC_REMOVERPORCATEGORIA);printf("Remover por categoria %s", alunos_vazio);
+		gotoxy(CURSOR_POS+2, OPC_GERARRELAORIO);printf("Gerar Relatório %s", alunos_vazio);
 		//gotoxy(CURSOR_POS+2, OPC_EXIBIR);printf("Exibir %s", alunos_vazio);
 		gotoxy(CURSOR_POS+2, OPC_SAIR);printf("Sair");
 		
@@ -106,8 +113,7 @@ int showMainMenu(int size){
 		}
 	}while(tecla != 13);
 	
-	if(tecla == 13)
-		return coord;
+	return coord;
 }
 
 void removeToast(){
@@ -139,11 +145,17 @@ void drawNotasInterface(aluno alunos[], int &size, int editable=1, int aluno_ind
 			printf("%d", _aluno.ra);
 			
 		gotoxy(40, 10);printf("Nome: %s", _aluno.nome);
+		
 		for(i=0; i<4; i++){
 			gotoxy(x_notas,14);printf("Nota %d: ", i+1); 
 			if(_aluno.ra != 0)
 				printf("%.1f", _aluno.notas[i]);
 			x_notas+=15;
+		}
+		
+		if(aluno_index != -1){
+			gotoxy(10, 18); printf("Média: %.1f", _aluno.media);
+			gotoxy(40, 18); printf("Conceito: %c", _aluno.conceito);	
 		}
 		
 		if(editable){
@@ -330,7 +342,7 @@ void drawSearchByRAInterface(aluno alunos[], int &size){
 					ra = 0;
 			}
 		}
-		else{
+		else if(ra != 0){
 			showToast("RA não encontrado!");
 			coord = OPC_CONSULTAR_OPTION_MUDARBUSCA;
 			getch();
@@ -338,21 +350,161 @@ void drawSearchByRAInterface(aluno alunos[], int &size){
 	}while(ra != 0);	
 }
 
-void drawConsultarInterface(aluno alunos[], int &size){
-	int coord;
+int drawSelectByNomeMenu(aluno resultSearch[], int resultSize){
+	int tecla;
+	int coord=OPC_CONSULTAR_OPTION_EXCLUIR_SIM;
 	
 	do{
-		clearCanvas();
-		gotoxy(35, 6);printf("Consultar por: ");
-		coord = showConsultarMenu();
-		clearCanvas();
-		switch(coord){
-			case OPC_CONSULTAR_RA:
-				drawSearchByRAInterface(alunos, size);
+		
+		gotoxy(CURSOR_POS, coord); printf("%c", CURSOR);
+		
+		gotoxy(CURSOR_POS+2, OPC_CONSULTAR_OPTION_EXCLUIR_SIM);printf("Sim");
+		gotoxy(CURSOR_POS+2, OPC_CONSULTAR_OPTION_EXCLUIR_CANCELAR);printf("Cancelar");
+		
+		tecla = getch();
+		
+		clearCoordinates(CURSOR_POS, coord);
+		switch(tecla){
+			case 72: 	//UP
+				coord = coord<=OPC_CONSULTAR_OPTION_EXCLUIR_SIM ? OPC_CONSULTAR_OPTION_EXCLUIR_CANCELAR : coord-1;
 				break;
-			case OPC_CONSULTAR_NOME: 
-				break;
+			case 80: 	//DOWN
+				coord = coord>=OPC_CONSULTAR_OPTION_EXCLUIR_CANCELAR ? OPC_CONSULTAR_OPTION_EXCLUIR_SIM : coord+1;
 		}
-	}while(coord != OPC_CONSULTAR_VOLTAR);
+	}while(tecla != 13);
+	return coord;
+}
+
+
+void drawConsultarInterface(aluno alunos[], int &size){
+	int coord;
+	drawSearchByRAInterface(alunos, size);
+	
+//	do{
+//		clearCanvas();
+//		gotoxy(35, 6);printf("Consultar por: ");
+//		coord = showConsultarMenu();
+//		clearCanvas();
+//		switch(coord){
+//			case OPC_CONSULTAR_RA:
+//				drawSearchByRAInterface(alunos, size);
+//				break;
+//			case OPC_CONSULTAR_NOME: 
+//				break;
+//		}
+//	}while(coord != OPC_CONSULTAR_VOLTAR);
 	
 }
+
+int drawRemoverPorCategoriaMenu(aluno alunos[], int size){
+	int tecla;
+	int coord = OPC_REMOVERPORCATEGORIA_A;
+	
+	char alunos_vazio[5][40];
+	strcpy(alunos_vazio[0], checkConceitoExists(alunos, size, 'A') == 0? "|Sem registros|" : "\0");
+	strcpy(alunos_vazio[1], checkConceitoExists(alunos, size, 'B') == 0? "|Sem registros|" : "\0");
+	strcpy(alunos_vazio[2], checkConceitoExists(alunos, size, 'C') == 0? "|Sem registros|" : "\0");
+	strcpy(alunos_vazio[3], checkConceitoExists(alunos, size, 'D') == 0? "|Sem registros|" : "\0");
+	strcpy(alunos_vazio[4], checkConceitoExists(alunos, size, 'E') == 0? "|Sem registros|" : "\0");
+	
+	for(int i=65; i<70 && !checkConceitoExists(alunos, size, i); i++){
+			coord++;
+		printf("%c => %d => %d\n", i, checkConceitoExists(alunos, size, i), coord);
+	}
+		
+	
+	do{
+		
+		gotoxy(CURSOR_POS, coord); printf("%c", CURSOR);
+		
+		gotoxy(CURSOR_POS+2, OPC_REMOVERPORCATEGORIA_A);printf("A %s", alunos_vazio[0]);
+		gotoxy(CURSOR_POS+2, OPC_REMOVERPORCATEGORIA_B);printf("B %s", alunos_vazio[1]);
+		gotoxy(CURSOR_POS+2, OPC_REMOVERPORCATEGORIA_C);printf("C %s", alunos_vazio[2]);
+		gotoxy(CURSOR_POS+2, OPC_REMOVERPORCATEGORIA_D);printf("D %s", alunos_vazio[3]);
+		gotoxy(CURSOR_POS+2, OPC_REMOVERPORCATEGORIA_E);printf("E %s", alunos_vazio[4]);
+		gotoxy(CURSOR_POS+2, OPC_REMOVERPORCATEGORIA_VOLTAR);printf("Voltar");
+		
+		tecla = getch();
+		
+		clearCoordinates(CURSOR_POS, coord);
+		switch(tecla){
+			case 72: 	//UP
+				coord = coord<=OPC_REMOVERPORCATEGORIA_A ? OPC_REMOVERPORCATEGORIA_VOLTAR : coord-1;
+				
+				if(coord == OPC_REMOVERPORCATEGORIA_E && !checkConceitoExists(alunos, size, 'E'))
+					coord--;
+					
+				if(coord == OPC_REMOVERPORCATEGORIA_D && !checkConceitoExists(alunos, size, 'D'))
+					coord--;
+					
+				if(coord == OPC_REMOVERPORCATEGORIA_C && !checkConceitoExists(alunos, size, 'C'))
+					coord--;
+					
+				if(coord == OPC_REMOVERPORCATEGORIA_B && !checkConceitoExists(alunos, size, 'B'))
+					coord--;
+					
+				if(coord == OPC_REMOVERPORCATEGORIA_A && !checkConceitoExists(alunos, size, 'A'))
+					coord--;
+					
+				coord = coord < OPC_REMOVERPORCATEGORIA_A ? OPC_REMOVERPORCATEGORIA_VOLTAR : coord;
+				break;
+			case 80: 	//DOWN
+				coord = coord>=OPC_REMOVERPORCATEGORIA_VOLTAR ? OPC_REMOVERPORCATEGORIA_A : coord+1;
+				
+				if(coord == OPC_REMOVERPORCATEGORIA_A && !checkConceitoExists(alunos, size, 'A'))
+					coord++;
+					
+				if(coord == OPC_REMOVERPORCATEGORIA_B && !checkConceitoExists(alunos, size, 'B'))
+					coord++;
+					
+				if(coord == OPC_REMOVERPORCATEGORIA_C && !checkConceitoExists(alunos, size, 'C'))
+					coord++;
+					
+				if(coord == OPC_REMOVERPORCATEGORIA_D && !checkConceitoExists(alunos, size, 'D'))
+					coord++;
+					
+				if(coord == OPC_REMOVERPORCATEGORIA_E && !checkConceitoExists(alunos, size, 'E'))
+					coord++;
+						
+				coord = coord>OPC_REMOVERPORCATEGORIA_VOLTAR ? OPC_REMOVERPORCATEGORIA_A : coord;
+		}
+	}while(tecla != 13);
+	
+	return coord;
+}
+
+void drawRemoverPorCategoriaInterface(aluno alunos[], int &size){
+	int coord;
+	char conceito;
+	do{
+		clearCanvas();
+		gotoxy(25, 6); printf("Remover por categoria:");
+	
+		coord = drawRemoverPorCategoriaMenu(alunos, size);
+		
+		removeToast();
+		
+		switch(coord){
+			case OPC_REMOVERPORCATEGORIA_A:
+				conceito = 'A';
+				break;
+			case OPC_REMOVERPORCATEGORIA_B:
+				conceito = 'B';
+				break;
+			case OPC_REMOVERPORCATEGORIA_C:
+				conceito = 'C';
+				break;
+			case OPC_REMOVERPORCATEGORIA_D:
+				conceito = 'D';
+				break;
+			case OPC_REMOVERPORCATEGORIA_E:
+				conceito = 'E';
+		}
+		if(removeAlunosByConceito(alunos, size, conceito))
+			showToast("Removidos com sucesso");
+	}while(coord != OPC_REMOVERPORCATEGORIA_VOLTAR);
+	
+	
+	
+}
+
