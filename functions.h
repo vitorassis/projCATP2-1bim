@@ -1,5 +1,9 @@
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define TF_SORT 15
 
 void sortNotas(float array[], float sorted[]){
 	int k, j, aux;
@@ -226,6 +230,67 @@ void readStringVariable(char variable[], int xi, int yi, int xf, int yf, int pre
 	}
 }
 
+int getAlunosByConceito(aluno alunos[], int size, aluno splitByConceito[], char conceito){
+	int i, size_return = 0;
+	for(i=0; i<size; i++){
+		if(alunos[i].conceito == conceito)
+			setAluno(splitByConceito[size_return++], alunos[i]);
+	}
+	return size_return;
+}
+
 int generateRelatorio(aluno alunos[], int size, char nome_arq[]){
-	//
+	aluno splitByConceito[5][TF];
+	int sizeSplited[5];
+	for(int i=0, letra=65; i<5; i++)
+		sizeSplited[i] = getAlunosByConceito(alunos, size, splitByConceito[i], letra++);
+	
+	
+	FILE *fp;	
+	fp = fopen(strcat(nome_arq, ".txt") ,"w");
+
+	char letra;
+	
+	for(int conceito=0; conceito<5; conceito++){
+		letra = conceito+'A';
+		fprintf(fp, "Conceito %c:\n", letra);
+		for(int item=0; item<sizeSplited[conceito]; item++){
+			fprintf(fp, "=============\n");
+			fprintf(fp, "\tRA: %d\tNome: %s\n", splitByConceito[conceito][item].ra, splitByConceito[conceito][item].nome);
+			for(int y=0; y<4; y++)
+				fprintf(fp, "\tNota %d: %.1f", y+1, splitByConceito[conceito][item].notas[y]);
+			fprintf(fp, "\n");
+			fprintf(fp, "\tMédia: %.1f\n", splitByConceito[conceito][item].media);
+		}
+		if(sizeSplited[conceito]==0)
+			fprintf(fp, "\t*Sem alunos nesse conceito");
+	}
+	
+	fclose(fp);
+	return 1;
+}
+
+void autoSeed(aluno alunos[], int &size, int qtd){
+	char nomes[TF_SORT][25]={
+		"Maria", "Joao", "Jeremias", "Margarida", "Francisco", "Abraham", "Luis", "Lauro", "Hugo", "Kaio", "Pedro", "Obi-wan Kenobi", "Vanessa", "Luan Bixa", "Xiaomi > Apple"
+	};
+	
+	aluno temp;
+	int i = 0;
+	
+	for(i; size<TF && i<qtd; i++){
+		int ra_temp;
+		do{
+			ra_temp = rand() % 20000+1;
+		}while(checkAlunoExists(alunos, size, ra_temp));
+		temp.ra = ra_temp;
+		
+		strcpy(temp.nome, nomes[rand() % TF_SORT]);
+		
+		for(int y=0; y<4; y++)
+			temp.notas[y] = rand()%10;
+			
+		insertAlunos(alunos, size, temp);
+	}
+	
 }

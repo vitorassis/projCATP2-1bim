@@ -4,11 +4,11 @@
 #define border 219
 
 #define OPC_INCLUIR 10
-#define OPC_CONSULTAR 11
-#define OPC_REMOVERPORCATEGORIA 12
-#define OPC_GERARRELAORIO 13
-#define OPC_EXIBIR 73
-#define OPC_SAIR 14
+#define OPC_AUTOSEEDER 11
+#define OPC_CONSULTAR 12
+#define OPC_REMOVERPORCATEGORIA 13
+#define OPC_GERARRELAORIO 14
+#define OPC_SAIR 15
 
 #define CURSOR 187
 #define CURSOR_POS 31
@@ -89,10 +89,10 @@ int showMainMenu(int size){
 		gotoxy(CURSOR_POS, coord); printf("%c", CURSOR);
 		
 		gotoxy(CURSOR_POS+2, OPC_INCLUIR);printf("Inserir");
+		gotoxy(CURSOR_POS+2, OPC_AUTOSEEDER);printf("AutoSeed");
 		gotoxy(CURSOR_POS+2, OPC_CONSULTAR);printf("Consultar %s", alunos_vazio);
 		gotoxy(CURSOR_POS+2, OPC_REMOVERPORCATEGORIA);printf("Remover por categoria %s", alunos_vazio);
 		gotoxy(CURSOR_POS+2, OPC_GERARRELAORIO);printf("Gerar Relatório %s", alunos_vazio);
-		//gotoxy(CURSOR_POS+2, OPC_EXIBIR);printf("Exibir %s", alunos_vazio);
 		gotoxy(CURSOR_POS+2, OPC_SAIR);printf("Sair");
 		
 		tecla = getch();
@@ -101,15 +101,15 @@ int showMainMenu(int size){
 		switch(tecla){
 			case 72: 	//UP
 				coord = coord<=OPC_INCLUIR ? OPC_SAIR : coord-1;
-				if(size == 0){
-					coord = OPC_INCLUIR;
-				}
+				while(size == 0 && (coord == OPC_GERARRELAORIO || coord == OPC_REMOVERPORCATEGORIA || coord == OPC_CONSULTAR))
+					coord--;
+				coord = coord<OPC_INCLUIR ? OPC_SAIR : coord;
 				break;
 			case 80: 	//DOWN
 				coord = coord>=OPC_SAIR ? OPC_INCLUIR : coord+1;
-				if(size == 0){
-					coord = OPC_SAIR;
-				}
+				while(size == 0 && (coord == OPC_CONSULTAR || coord == OPC_REMOVERPORCATEGORIA || coord == OPC_GERARRELAORIO))
+					coord++;
+				coord = coord>OPC_SAIR ? OPC_INCLUIR : coord;
 		}
 	}while(tecla != 13);
 	
@@ -500,12 +500,9 @@ void drawRemoverPorCategoriaInterface(aluno alunos[], int &size){
 			case OPC_REMOVERPORCATEGORIA_E:
 				conceito = 'E';
 		}
-		if(removeAlunosByConceito(alunos, size, conceito))
+		if(coord!=OPC_REMOVERPORCATEGORIA_VOLTAR && removeAlunosByConceito(alunos, size, conceito))
 			showToast("Removidos com sucesso");
 	}while(coord != OPC_REMOVERPORCATEGORIA_VOLTAR);
-	
-	
-	
 }
 
 void drawGerarRelatorioInterface(aluno alunos[], int size){
@@ -517,7 +514,25 @@ void drawGerarRelatorioInterface(aluno alunos[], int size){
 		readStringVariable(nome_arq, 27, 8, 50, 8, 1);
 	}while(stricmp(nome_arq, "\0") == 0);
 	
+	removeToast();
+	
 	if(stricmp(nome_arq, "0") !=0){
-		generateRelatorio(alunos, size, nome_arq);
+		if(generateRelatorio(alunos, size, nome_arq))
+			showToast("Relatório criado com sucesso");
+		else
+			showToast("Erro no relatório");
 	}
+}
+
+void drawAutoSeederInterface(aluno alunos[], int &size){
+	gotoxy(centralize("AutoSeed"), 6); printf("AutoSeed");
+	int qtd;
+	
+	gotoxy(10, 8); printf("Quantidade: ");
+	gotoxy(22, 9); printf("(Máx: %d)", TF-size);
+	do{
+		qtd = readIntVariable(22, 8, 40, 8);
+	}while(qtd+size >= TF);
+	
+	autoSeed(alunos, size, qtd);
 }
