@@ -532,7 +532,7 @@ void drawAutoSeederInterface(aluno alunos[], int &size){
 	gotoxy(22, 9); printf("(Máx: %d)", TF-size);
 	do{
 		qtd = readIntVariable(22, 8, 40, 8);
-	}while(qtd+size >= TF);
+	}while(qtd+size > TF);
 	
 	autoSeed(alunos, size, qtd);
 }

@@ -1,9 +1,0 @@
-REVISAO TELECURSO 2000
-DS usa machine learning como ferramentas
-	Programa se adapta p resolver o probmea de maneira eficiente
-	IA - simula inteligencia (ue)
-	Machine Learning - Aprende 
-		Maior treinamento = melhor fica
-		Capaz de aprender por meio de exemplos
-		Sub area de IA
-	

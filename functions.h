@@ -267,6 +267,8 @@ int generateRelatorio(aluno alunos[], int size, char nome_arq[]){
 	}
 	
 	fclose(fp);
+	
+	system(nome_arq);
 	return 1;
 }
 

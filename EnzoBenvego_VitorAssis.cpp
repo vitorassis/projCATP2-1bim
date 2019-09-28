@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <windows.h>
 
-#define TF 400
+#define TF 1000
 
 #include "structs.h"
 #include "interface.h"
