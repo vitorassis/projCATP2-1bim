@@ -2,8 +2,17 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
+#include <windows.h>
 
 #define TF_SORT 15
+
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 void sortNotas(float array[], float sorted[]){
 	int k, j, aux;
@@ -34,6 +43,10 @@ int checkConceitoExists(aluno alunos[], int size, char conceito){
 		return 0;
 	else
 		return 1;
+}
+
+int checkAlunosIsFull(int size){
+	return size == TF;
 }
 
 float generateMedia(float notas[]){
@@ -127,9 +140,14 @@ int removeAlunos(aluno alunos[], int &size, int ra){ 	//EXCLUIR NOTAS
 
 int removeAlunosByConceito(aluno alunos[], int &size, char conceito){
 	int result = 1;
+	int ra_verifier = 0;
 	for(int i=0; i<size; i++){
-		if(alunos[i].conceito == conceito)
+		if(alunos[i].conceito == conceito){
+			ra_verifier = alunos[i].ra;
 			result *= removeAlunos(alunos, size, alunos[i].ra);
+			if(alunos[i].ra != ra_verifier)
+				i--;
+		}
 	}
 	return result;
 }
@@ -263,12 +281,14 @@ int generateRelatorio(aluno alunos[], int size, char nome_arq[]){
 			fprintf(fp, "\tMédia: %.1f\n", splitByConceito[conceito][item].media);
 		}
 		if(sizeSplited[conceito]==0)
-			fprintf(fp, "\t*Sem alunos nesse conceito");
+			fprintf(fp, "\t*Sem alunos nesse conceito\n");
 	}
 	
 	fclose(fp);
 	
+	MessageBeep(MB_OK); // FAZ O WARNING DO SISTEMA
 	system(nome_arq);
+	
 	return 1;
 }
 
@@ -279,11 +299,11 @@ void autoSeed(aluno alunos[], int &size, int qtd){
 	
 	aluno temp;
 	int i = 0;
+	int ra_temp = 0;
 	
 	for(i; size<TF && i<qtd; i++){
-		int ra_temp;
 		do{
-			ra_temp = rand() % 20000+1;
+			ra_temp ++;//= rand() % 20000+1;
 		}while(checkAlunoExists(alunos, size, ra_temp));
 		temp.ra = ra_temp;
 		

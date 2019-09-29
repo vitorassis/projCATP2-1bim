@@ -1,3 +1,4 @@
+//STRUCT ALUNO
 struct aluno{
 	int ra;
 	char nome[40];
